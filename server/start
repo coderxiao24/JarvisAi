@@ -1,31 +1,31 @@
-const readline = require('readline');  
-const { exec } = require('child_process');  
+const readline = require("readline");
+const { exec } = require("child_process");
 
-// 创建接口以读取标准输入和输出  
-const rl = readline.createInterface({  
-  input: process.stdin,  
-  output: process.stdout  
-});  
+// 创建接口以读取标准输入和输出
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 
-// 打印提示信息  
-rl.question('请输入肖楷炫的大模型APIKEY: ', (input) => {  
-  console.log(`你刚才输入的APIKEY是: ${input}`);  
-  // 构造 pm2 命令  
-  const command = `APIKEY=${input} pm2 start index.js --time --name ai --stop-exit-codes 0`;   
+// 打印提示信息
+rl.question("请输入肖楷炫的大模型APIKEY: ", (input) => {
+  console.log(`你刚才输入的APIKEY是: ${input}`);
+  // 构造 pm2 命令
+  const command = `APIKEY=${input} pm2 start index.js --time --name ai --stop-exit-codes 0`;
 
-  // 执行命令  
-  exec(command, (error, stdout, stderr) => {  
-    if (error) {  
-      console.error(`执行命令时出错: ${error}`);  
-      return;  
-    }  
-    if (stderr) {  
-      console.error(`stderr: ${stderr}`);  
-      return;  
-    }  
-    console.log(`stdout: ${stdout}`);  
-  });  
+  // 执行命令
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`执行命令时出错: ${error}`);
+      return;
+    }
+    if (stderr) {
+      console.error(`stderr: ${stderr}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+  });
 
-  // 关闭接口  
-  rl.close();  
+  // 关闭接口
+  rl.close();
 });
