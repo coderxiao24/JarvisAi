@@ -6,6 +6,38 @@
 
 - 和ai对话，并且ai预置了钢铁侠中贾维斯的角色，你的角色预置为蜘蛛侠
 
+# 如何启动
+
+## frontend 目录
+
+
+
+- 前端端源码
+
+```bash
+cd client
+
+npm i
+
+npm run dev
+```
+
+
+
+## server 目录
+
+
+
+- 服务端源码
+
+```bash
+cd server
+
+npm i
+
+node start
+```
+
 ## 使用说明
 
 - 直接聊天就行
