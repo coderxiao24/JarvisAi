@@ -11,7 +11,7 @@ const rl = readline.createInterface({
 rl.question('请输入肖楷炫的大模型APIKEY: ', (input) => {  
   console.log(`你刚才输入的APIKEY是: ${input}`);  
   // 构造 pm2 命令  
-  const command = `pm2 start index.js --time --name ai --stop-exit-codes 0 --env APIKEY=${input}`;  
+  const command = `APIKEY=${input} pm2 start index.js --time --name ai --stop-exit-codes 0`;   
 
   // 执行命令  
   exec(command, (error, stdout, stderr) => {  

@@ -1,3 +1,8 @@
+if (!process.env.APIKEY) {
+  console.log("使用node start启动服务");
+  return;
+}
+
 const Koa = require("koa");
 const bodyParser = require("koa-bodyparser");
 const path = require("path");
