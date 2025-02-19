@@ -236,7 +236,7 @@ export default () => {
               title: "用户",
             }}
             assistantMeta={{
-              avatar: "/aiAvatar.svg",
+              avatar: "/deepseek.svg",
               title: "DeepSeek",
             }}
             request={async (messages: any) => {
