@@ -15,49 +15,53 @@ export default () => {
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-      <Flex gap="small" align="center">
-        语言：
-        <Segmented<Locale>
-          options={["zh-CN", "en-US", "zh-HK"]}
-          defaultValue="zh-CN"
-          onChange={(v) => {
-            setLanguage(v);
-          }}
-        />
-        模型:
-        <Radio.Group
-          onChange={(e) => {
-            setModel(e.target.value);
-          }}
-          value={model}
-          options={[
-            {
-              value: 1,
-              label: (
-                <Flex gap="small" justify="center" align="center" vertical>
-                  <img
-                    src="/qianwen.svg"
-                    style={{ height: "30px", width: "30px" }}
-                  />
-                  qwen2(1.5b)
-                </Flex>
-              ),
-            },
-            {
-              value: 2,
-              label: (
-                <Flex gap="small" justify="center" align="center" vertical>
-                  <img
-                    src="/deepseek.svg"
-                    style={{ height: "30px", width: "30px" }}
-                  />
-                  DeepSeek-R1(8B)
-                </Flex>
-              ),
-            },
-          ]}
-        />
-      </Flex>
+      <Row>
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+          语言：
+          <Segmented<Locale>
+            options={["zh-CN", "en-US", "zh-HK"]}
+            defaultValue="zh-CN"
+            onChange={(v) => {
+              setLanguage(v);
+            }}
+          />
+        </Col>
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+          模型:
+          <Radio.Group
+            onChange={(e) => {
+              setModel(e.target.value);
+            }}
+            value={model}
+            options={[
+              {
+                value: 1,
+                label: (
+                  <Flex gap="small" justify="center" align="center" vertical>
+                    <img
+                      src="/qianwen.svg"
+                      style={{ height: "30px", width: "30px" }}
+                    />
+                    qwen2(1.5b)
+                  </Flex>
+                ),
+              },
+              {
+                value: 2,
+                label: (
+                  <Flex gap="small" justify="center" align="center" vertical>
+                    <img
+                      src="/deepseek.svg"
+                      style={{ height: "30px", width: "30px" }}
+                    />
+                    DeepSeek-R1(8B)
+                  </Flex>
+                ),
+              },
+            ]}
+          />
+        </Col>
+      </Row>
 
       <div style={{ flex: 1 }}>
         {model === 1 ? (
