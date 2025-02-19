@@ -7,25 +7,33 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-// 打印提示信息
-rl.question("请输入肖楷炫的大模型APIKEY: ", (input) => {
-  console.log(`你刚才输入的APIKEY是: ${input}`);
-  // 构造 pm2 命令
-  const command = `APIKEY=${input} pm2 start index.js --time --name ai --stop-exit-codes 0`;
 
-  // 执行命令
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`执行命令时出错: ${error}`);
-      return;
-    }
-    if (stderr) {
-      console.error(`stderr: ${stderr}`);
-      return;
-    }
-    console.log(`stdout: ${stdout}`);
-  });
 
-  // 关闭接口
-  rl.close();
+
+// 询问第一个 API KEY  
+rl.question("请输入肖楷炫的千问大模型APIKEY: ", (QWAPIKEY) => {  
+  // 询问第二个 API KEY  
+  rl.question("请输入肖楷炫的deepseek大模型APIKEY: ", (DSAPIKEY) => {  
+    console.log(`你刚才输入的千问大模型APIKEY是: ${QWAPIKEY}`);  
+    console.log(`你刚才输入的deepseek大模型APIKEY是: ${DSAPIKEY}`);  
+    
+    // 构造 pm2 命令  
+    const command = `pm2 start index.js --time --name ai --stop-exit-codes 0 --env QWAPIKEY=${QWAPIKEY} --env DSAPIKEY=${DSAPIKEY}`;  
+    
+    // 执行命令  
+    exec(command, (error, stdout, stderr) => {  
+      if (error) {  
+        console.error(`执行命令时出错: ${error}`);  
+        return;  
+      }  
+      if (stderr) {  
+        console.error(`stderr: ${stderr}`);  
+        return;  
+      }  
+      console.log(`stdout: ${stdout}`);  
+    });  
+
+    // 关闭接口  
+    rl.close();  
+  });  
 });

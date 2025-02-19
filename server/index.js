@@ -1,6 +1,8 @@
-if (!process.env.APIKEY) {
+if (!process.env.DSAPIKEY || !process.env.QWAPIKEY) {
   console.log("使用node start启动服务");
   return;
+} else {
+  console.log(`apikey是${process.env.APIKEY}`);
 }
 
 const Koa = require("koa");

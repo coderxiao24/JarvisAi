@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+秘钥.txt
 dist
 dist-ssr
 *.local

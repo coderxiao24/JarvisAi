@@ -2,45 +2,44 @@ var Router = require("koa-router");
 var router = new Router();
 const https = require("https");
 const { PassThrough } = require("stream");
+
 router.post("/", async (ctx) => {
   ctx.set({
-    "Content-Type": "text/event-stream",
+    "Content-Type": "text/event-stream; charset=utf-8",
     "Cache-Control": "no-cache",
     Connection: "keep-alive",
   });
   const stream = new PassThrough();
   ctx.body = stream;
 
-  const req = https.request(
-    {
-      hostname: "dashscope.aliyuncs.com",
-      port: 443,
-      path: "/api/v1/services/aigc/text-generation/generation",
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "text/event-stream",
-        Authorization: `Bearer ${process.env.APIKEY}`,
-      },
-    },
-    (res) => {
-      res.on("data", (chunk) => {
-        stream.write(chunk);
-      });
-      res.on("end", () => {
-        stream.end();
-      });
-    }
-  );
-  req.on("error", (e) => {
-    ctx.status = 500;
-    ctx.body = e.message;
-  });
+  let req;
 
-  req.write(
-    JSON.stringify({
-      model: "qwen2-1.5b-instruct",
-      input: {
+  if (ctx.request.body.model === 1) {
+    req = https.request(
+      {
+        hostname: "dashscope.aliyuncs.com",
+        port: 443,
+        path: "/compatible-mode/v1/chat/completions",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+          Authorization: `Bearer ${process.env.QWAPIKEY}`,
+        },
+      },
+      (res) => {
+        res.on("data", (chunk) => {
+          stream.write(chunk);
+        });
+        res.on("end", () => {
+          stream.end();
+        });
+      }
+    );
+    req.write(
+      JSON.stringify({
+        model: "qwen2-1.5b-instruct",
+
         messages: [
           {
             role: "system",
@@ -49,15 +48,49 @@ router.post("/", async (ctx) => {
           },
           ...ctx.request.body.messages,
         ],
+        stream: true,
+        parameters: {
+          result_format: "message",
+          incremental_output: true, //增量输出
+        },
+      })
+    );
+  } else if (ctx.request.body.model === 2) {
+    req = https.request(
+      {
+        hostname: "api.siliconflow.cn",
+        port: 443,
+        path: "/v1/chat/completions",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "text/event-stream",
+          Authorization: `Bearer ${process.env.DSAPIKEY}`,
+        },
       },
-      parameters: {
-        result_format: "message",
-        incremental_output: true, //增量输出
-        //  temperature: 0.88, //控制输出多样性的参数，较高值导致更多随机性,取值范围：[0, 2)，不建议取值为0，无意义。
-        //  presence_penalty: 1.0, //取值范围 [-2.0, 2.0]。值与模型生成的重复度成反比
-      },
-    })
-  );
+      (res) => {
+        res.on("data", (chunk) => {
+          stream.write(chunk);
+        });
+        res.on("end", () => {
+          stream.end();
+        });
+      }
+    );
+
+    req.write(
+      JSON.stringify({
+        model: "deepseek-ai/DeepSeek-R1-Distill-Llama-8B",
+        messages: ctx.request.body.messages,
+        stream: true,
+      })
+    );
+  }
+
+  req.on("error", (e) => {
+    ctx.status = 500;
+    ctx.body = e.message;
+  });
 
   req.end();
 });
