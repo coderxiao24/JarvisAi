@@ -18,7 +18,7 @@ rl.question("请输入肖楷炫的千问大模型APIKEY: ", (QWAPIKEY) => {
     console.log(`你刚才输入的deepseek大模型APIKEY是: ${DSAPIKEY}`);  
     
     // 构造 pm2 命令  
-    const command = `pm2 start index.js --time --name ai --stop-exit-codes 0 --env QWAPIKEY=${QWAPIKEY} --env DSAPIKEY=${DSAPIKEY}`;  
+    const command = `QWAPIKEY=${QWAPIKEY} DSAPIKEY=${DSAPIKEY} pm2 start index.js --time --name ai --stop-exit-codes 0`;  
     
     // 执行命令  
     exec(command, (error, stdout, stderr) => {  
