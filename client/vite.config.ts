@@ -22,8 +22,8 @@ export default defineConfig({
     compress: false,
     proxy: {
       "/xkx": {
-        // target: "http://123.57.91.8:1126",
-        target: "http://localhost:1126",
+        target: "http://123.57.91.8:1126",
+        // target: "http://localhost:1126",
         changeOrigin: true,
         rewrite: (path) => {
           return path.replace(/\/xkx/, "");
