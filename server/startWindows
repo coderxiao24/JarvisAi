@@ -1,0 +1,36 @@
+const readline = require("readline");
+const { exec } = require("child_process");
+
+// 创建接口以读取标准输入和输出
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
+
+// 询问第一个 API KEY  
+rl.question("请输入肖楷炫的千问大模型APIKEY: ", (QWAPIKEY) => {  
+  // 询问第二个 API KEY  
+  rl.question("请输入肖楷炫的deepseek大模型APIKEY: ", (DSAPIKEY) => {  
+    console.log(`你刚才输入的千问大模型APIKEY是: ${QWAPIKEY}`);  
+    console.log(`你刚才输入的deepseek大模型APIKEY是: ${DSAPIKEY}`);  
+    
+    // 构造 pm2 命令，注意这里针对 Windows 系统的修改
+    const command = `set QWAPIKEY=${QWAPIKEY} && set DSAPIKEY=${DSAPIKEY} && pm2 start index.js --time --name ai --stop-exit-codes 0`;  
+    
+    // 执行命令  
+    exec(command, { shell: 'cmd' }, (error, stdout, stderr) => {  
+      if (error) {  
+        console.error(`执行命令时出错: ${error}`);  
+        return;  
+      }  
+      if (stderr) {  
+        console.error(`stderr: ${stderr}`);  
+        return;  
+      }  
+      console.log(`stdout: ${stdout}`);  
+    });  
+
+    // 关闭接口  
+    rl.close();  
+  });  
+});
