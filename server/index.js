@@ -1,5 +1,5 @@
-if (!process.env.DSAPIKEY || !process.env.QWAPIKEY) {
-  console.log("使用node start启动服务");
+if (!process.env.APIKEY) {
+  console.log("使用node start启动服务", process.env);
   return;
 }
 

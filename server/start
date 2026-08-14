@@ -8,18 +8,11 @@ const rl = readline.createInterface({
 });
 
 
-
-
-// 询问第一个 API KEY  
-rl.question("请输入肖楷炫的千问大模型APIKEY: ", (QWAPIKEY) => {  
-  // 询问第二个 API KEY  
-  rl.question("请输入肖楷炫的deepseek大模型APIKEY: ", (DSAPIKEY) => {  
-    console.log(`你刚才输入的千问大模型APIKEY是: ${QWAPIKEY}`);  
-    console.log(`你刚才输入的deepseek大模型APIKEY是: ${DSAPIKEY}`);  
-    
+// 询问API KEY  
+rl.question("请输入肖楷炫的千问大模型APIKEY: ", (APIKEY) => {  
+    console.log(`你刚才输入的APIKEY是: ${APIKEY}`);  
     // 构造 pm2 命令  
-    const command = `QWAPIKEY=${QWAPIKEY} DSAPIKEY=${DSAPIKEY} pm2 start index.js --time --name ai --stop-exit-codes 0`;  
-    
+    const command = `APIKEY=${APIKEY} pm2 start index.js --time --name ai --stop-exit-codes 0`;  
     // 执行命令  
     exec(command, (error, stdout, stderr) => {  
       if (error) {  
@@ -32,8 +25,6 @@ rl.question("请输入肖楷炫的千问大模型APIKEY: ", (QWAPIKEY) => {
       }  
       console.log(`stdout: ${stdout}`);  
     });  
-
     // 关闭接口  
     rl.close();  
-  });  
 });
