@@ -10,7 +10,6 @@ import _ from "lodash";
 
 export default () => {
   const [language, setLanguage] = useState<Locale>("zh-CN");
-  const chatRef = useRef<ProChatInstance>();
   const [model, setModel] = useState(1);
 
   return (
@@ -42,7 +41,7 @@ export default () => {
                       src="/qianwen.svg"
                       style={{ height: "30px", width: "30px" }}
                     />
-                    qwen2(1.5b)
+                    Qwen3(8B)
                   </Flex>
                 ),
               },
@@ -64,251 +63,130 @@ export default () => {
       </Row>
 
       <div style={{ flex: 1 }}>
-        {model === 1 ? (
-          <ProChat
-            locale={language}
-            helloMessage={"你好，我是托尼的贾维斯，有什么问题吗小蜘蛛？"}
-            actions={{
-              render: (defaultDoms) => {
-                return [
-                  <div>
-                    <a
-                      key="user"
-                      onClick={() => {
-                        Modal.info({
-                          okText: "好的",
-                          closable: true,
-                          maskClosable: true,
-                          title: "有问题反馈？",
-                          width: 320,
-                          content: (
-                            <>
-                              <Row gutter={16}>
-                                <Col span={6} style={{ textAlign: "right" }}>
-                                  <PhoneTwoTone /> :
-                                </Col>
-                                <Col span={18}>13140022101（微信同号）</Col>
-                              </Row>
-                              <Row gutter={16}>
-                                <Col span={6} style={{ textAlign: "right" }}>
-                                  <MailTwoTone /> :
-                                </Col>
-                                <Col span={18}>xiaokaixuan24@163.com</Col>
-                              </Row>
-                            </>
-                          ),
-                          icon: null,
-                        });
-                      }}
-                    >
-                      联系托尼
-                    </a>
-                    <a
-                      style={{ marginLeft: "2em" }}
-                      key="download"
-                      href="https://xiaokaixuan.com/xkx/xkxAi.apk"
-                      download="xkxAi.apk"
-                    >
-                      下载应用
-                    </a>
-                  </div>,
-                  ...defaultDoms,
-                ];
-              },
-              flexConfig: {
-                gap: 16,
-                direction: "horizontal",
-                justify: "space-between",
-              },
-            }}
-            showTitle
-            userMeta={{
-              avatar: "/userAvatar.svg",
-              title: "小蜘蛛",
-            }}
-            assistantMeta={{
-              avatar: "/aiAvatar.svg",
-              title: "贾维斯",
-            }}
-            request={async (messages: any) => {
-              const encoder = new TextEncoder();
-              function start(controller) {
-                fetchEventSource("/xkx/chat", {
-                  headers: { "Content-Type": "application/json" },
-                  method: "post",
-                  body: JSON.stringify({ messages, model }),
-                  openWhenHidden: true,
+        <ProChat
+          locale={language}
+          helloMessage={"你好，我是xkx的贾维斯，有什么问题吗小蜘蛛？"}
+          actions={{
+            render: (defaultDoms) => {
+              return [
+                <div>
+                  <a
+                    key="user"
+                    onClick={() => {
+                      Modal.info({
+                        okText: "好的",
+                        closable: true,
+                        maskClosable: true,
+                        title: "有问题反馈？",
+                        width: 320,
+                        content: (
+                          <>
+                            <Row gutter={16}>
+                              <Col span={6} style={{ textAlign: "right" }}>
+                                <PhoneTwoTone /> :
+                              </Col>
+                              <Col span={18}>13140022101（微信同号）</Col>
+                            </Row>
+                            <Row gutter={16}>
+                              <Col span={6} style={{ textAlign: "right" }}>
+                                <MailTwoTone /> :
+                              </Col>
+                              <Col span={18}>xiaokaixuan24@163.com</Col>
+                            </Row>
+                          </>
+                        ),
+                        icon: null,
+                      });
+                    }}
+                  >
+                    联系托尼
+                  </a>
+                </div>,
+                ...defaultDoms,
+              ];
+            },
+            flexConfig: {
+              gap: 16,
+              direction: "horizontal",
+              justify: "space-between",
+            },
+          }}
+          showTitle
+          userMeta={{
+            avatar: "/userAvatar.svg",
+            title: "小蜘蛛",
+          }}
+          assistantMeta={{
+            avatar: "/aiAvatar.svg",
+            title: "贾维斯",
+          }}
+          request={async (messages: any) => {
+            const encoder = new TextEncoder();
+            function start(controller) {
+              let thinking = false;
+              fetchEventSource("/xkx/chat", {
+                headers: { "Content-Type": "application/json" },
+                method: "post",
+                body: JSON.stringify({ messages, model }),
+                openWhenHidden: true,
 
-                  onmessage(event) {
-                    if (event.data.length !== 0) {
-                      if (event.data === "[DONE]") {
-                        controller.desiredSize > 0 && controller.close();
-                        return;
-                      }
-                      const data = JSON.parse(event.data);
-                      if (data.choices[0].finish_reason === "stop") {
-                        controller.desiredSize > 0 && controller.close();
-                        return;
-                      }
-                      if (data.choices[0].delta.content) {
-                        controller.enqueue(
-                          encoder.encode(data.choices[0].delta.content)
-                        );
-                      }
+                onmessage(event) {
+                  if (event.data.length !== 0) {
+                    if (event.data === "[DONE]") {
+                      controller.desiredSize > 0 && controller.close();
+                      return;
                     }
-                  },
-                  onerror(error) {
-                    controller.error(error);
-                    controller.desiredSize > 0 && controller.close();
-                  },
-                  onclose(msg) {
-                    controller.desiredSize > 0 && controller.close();
-                  },
-                });
-              }
-              const readableStream = new ReadableStream({
-                start,
-              });
-              return new Response(readableStream);
-            }}
-          />
-        ) : (
-          <ProChat
-            chatRef={chatRef}
-            locale={language}
-            helloMessage={"你好，我是DeepSeek-R1(8B)，有什么问题吗？"}
-            actions={{
-              render: (defaultDoms) => {
-                return [
-                  <div>
-                    <a
-                      key="user"
-                      onClick={() => {
-                        Modal.info({
-                          okText: "好的",
-                          closable: true,
-                          maskClosable: true,
-                          title: "有问题反馈？",
-                          width: 320,
-                          content: (
-                            <>
-                              <Row gutter={16}>
-                                <Col span={6} style={{ textAlign: "right" }}>
-                                  <PhoneTwoTone /> :
-                                </Col>
-                                <Col span={18}>13140022101（微信同号）</Col>
-                              </Row>
-                              <Row gutter={16}>
-                                <Col span={6} style={{ textAlign: "right" }}>
-                                  <MailTwoTone /> :
-                                </Col>
-                                <Col span={18}>xiaokaixuan24@163.com</Col>
-                              </Row>
-                            </>
-                          ),
-                          icon: null,
-                        });
-                      }}
-                    >
-                      联系托尼
-                    </a>
-                    <a
-                      style={{ marginLeft: "2em" }}
-                      key="download"
-                      href="https://xiaokaixuan.com/xkx/xkxAi.apk"
-                      download="xkxAi.apk"
-                    >
-                      下载应用
-                    </a>
-                  </div>,
-                  ...defaultDoms,
-                ];
-              },
-              flexConfig: {
-                gap: 16,
-                direction: "horizontal",
-                justify: "space-between",
-              },
-            }}
-            showTitle
-            userMeta={{
-              avatar: "/userAvatar1.svg",
-              title: "用户",
-            }}
-            assistantMeta={{
-              avatar: "/deepseek.svg",
-              title: "DeepSeek",
-            }}
-            request={async (messages: any) => {
-              const encoder = new TextEncoder();
-              function start(controller) {
-                let thinking = false;
-                fetchEventSource("/xkx/chat", {
-                  headers: { "Content-Type": "application/json" },
-                  method: "post",
-                  body: JSON.stringify({ messages, model }),
-                  openWhenHidden: true,
 
-                  onmessage(event) {
-                    if (event.data.length !== 0) {
-                      if (event.data === "[DONE]") {
-                        controller.desiredSize > 0 && controller.close();
-                        return;
-                      }
+                    const data = JSON.parse(event.data);
 
-                      const data = JSON.parse(event.data);
-
-                      if (data.choices[0].finish_reason === "stop") {
-                        controller.desiredSize > 0 && controller.close();
-                        return;
-                      }
-
-                      if (data.choices[0].delta.reasoning_content) {
-                        if (!thinking)
-                          controller.enqueue(
-                            encoder.encode("--- \n思考开始\n\n```\n")
-                          );
-
-                        thinking = true;
-
-                        controller.enqueue(
-                          encoder.encode(
-                            data.choices[0].delta.reasoning_content
-                          )
-                        );
-                      }
-
-                      if (data.choices[0].delta.content) {
-                        if (thinking) {
-                          controller.enqueue(
-                            encoder.encode("\n```\n思考结束\n\n---")
-                          );
-                        }
-                        thinking = false;
-
-                        controller.enqueue(
-                          encoder.encode(data.choices[0].delta.content)
-                        );
-                      }
+                    if (data.choices[0].finish_reason === "stop") {
+                      controller.desiredSize > 0 && controller.close();
+                      return;
                     }
-                  },
-                  onerror(error) {
-                    controller.error(error);
-                    controller.desiredSize > 0 && controller.close();
-                  },
-                  onclose(msg) {
-                    controller.error("结束了", msg);
-                    controller.desiredSize > 0 && controller.close();
-                  },
-                });
-              }
-              const readableStream = new ReadableStream({
-                start,
+
+                    if (data.choices[0].delta.reasoning_content) {
+                      if (!thinking)
+                        controller.enqueue(
+                          encoder.encode("--- \n思考开始\n\n```\n"),
+                        );
+
+                      thinking = true;
+
+                      controller.enqueue(
+                        encoder.encode(data.choices[0].delta.reasoning_content),
+                      );
+                    }
+
+                    if (data.choices[0].delta.content) {
+                      if (thinking) {
+                        controller.enqueue(
+                          encoder.encode("\n```\n思考结束\n\n---"),
+                        );
+                      }
+                      thinking = false;
+
+                      controller.enqueue(
+                        encoder.encode(data.choices[0].delta.content),
+                      );
+                    }
+                  }
+                },
+                onerror(error) {
+                  controller.error(error);
+                  controller.desiredSize > 0 && controller.close();
+                },
+                onclose(msg) {
+                  controller.error("结束了", msg);
+                  controller.desiredSize > 0 && controller.close();
+                },
               });
-              return new Response(readableStream);
-            }}
-          />
-        )}
+            }
+            const readableStream = new ReadableStream({
+              start,
+            });
+            return new Response(readableStream);
+          }}
+        />
       </div>
     </div>
   );
